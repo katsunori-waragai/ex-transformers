@@ -1,3 +1,8 @@
+"""
+copied from
+https://huggingface.co/docs/transformers/model_doc/clip
+"""
+
 from PIL import Image
 import requests
 
