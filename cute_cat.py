@@ -5,6 +5,9 @@ from transformers import pipeline
 import cv2
 import numpy as np
 
+
+from names2num import get_label2num_dict
+
 _COLORS = np.array(
     [
         0.000, 0.447, 0.741,
@@ -92,6 +95,8 @@ _COLORS = np.array(
 
 _COLORS_UINT8 = (255 * _COLORS).astype(np.uint8)
 
+LABEL2NUM = get_label2num_dict()
+
 def draw_detection(image, result):
     for i, d in enumerate(result):
         xmin = d["box"]["xmin"]
@@ -99,6 +104,8 @@ def draw_detection(image, result):
         ymin = d["box"]["ymin"]
         ymax = d["box"]["ymax"]
         r, g, b = _COLORS_UINT8[i, :]
+        num = LABEL2NUM.get(d["label"], 80) - 1
+        r, g, b = _COLORS_UINT8[num, :]
         color = (int(r), int(g), int(b))
         cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 3)
         cv2.putText(image, d["label"], (xmin, ymin),
