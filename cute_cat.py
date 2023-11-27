@@ -130,16 +130,51 @@ def pil2cv(image):
     return new_image
 
 
-# Download an image with cute cats
-url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png"
-image_data = requests.get(url, stream=True).raw
-image = Image.open(image_data)
+def cv2pil(image):
+    ''' OpenCV型 -> PIL型 '''
+    new_image = image.copy()
+    if new_image.ndim == 2:  # モノクロ
+        pass
+    elif new_image.shape[2] == 3:  # カラー
+        new_image = cv2.cvtColor(new_image, cv2.COLOR_BGR2RGB)
+    elif new_image.shape[2] == 4:  # 透過
+        new_image = cv2.cvtColor(new_image, cv2.COLOR_BGRA2RGBA)
+    new_image = Image.fromarray(new_image)
+    return new_image
 
-# Allocate a pipeline for object detection
-object_detector = pipeline('object-detection')
-result = object_detector(image)
-print(result)
-cvimg = pil2cv(image)
-image = draw_detection(cvimg, result)
-cv2.imwrite("junk.jpg", cvimg)
+def detect_url_image(url):
+    image_data = requests.get(url, stream=True).raw
+    image = Image.open(image_data)
 
+    # Allocate a pipeline for object detection
+    object_detector = pipeline('object-detection')
+    result = object_detector(image)
+    print(result)
+    cvimg = pil2cv(image)
+    oimage = draw_detection(cvimg, result)
+    cv2.imwrite("junk.jpg", oimage)
+
+def detect_for_video():
+    object_detector = pipeline('object-detection')
+    cap = cv2.VideoCapture(0)
+    cv2.namedWindow("transformers", cv2.WINDOW_NORMAL)
+    while True:
+        ret, cvimg = cap.read()
+        if cvimg is None:
+            break
+
+        image = cv2pil(cvimg)
+        result = object_detector(image)
+        oimage = draw_detection(cvimg, result)
+        cv2.imshow("transformers", oimage)
+        key = cv2.waitKey(1)
+        if key & 0xff == ord('q'):
+            break
+    cv2.destroyAllWindows()
+if __name__ == "__main__":
+    if 0:
+        # Download an image with cute cats
+        url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png"
+        detect_url_image(url)
+
+    detect_for_video()
