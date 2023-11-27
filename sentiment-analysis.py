@@ -9,6 +9,8 @@ if __name__ == "__main__":
     print(result)
     while True:
         text = input("English text: ")
+        if len(text) == 0:
+            break
         print(text)
         result = classifier(text)
         print(result)
