@@ -8,6 +8,10 @@ import cv2
 
 from cute_cat import cv2pil, pil2cv
 
+def colorize_segmantation(results):
+    pass
+
+
 OUTDIR = Path(__name__).parent / "results"
 OUTDIR.mkdir(exist_ok=True)
 
@@ -21,8 +25,15 @@ while True:
         break
 
     image = cv2pil(cvimg)
+    print(f"{image.size}=")
     results = semantic_segmentation(image)
-    result_pil = results[-1]["mask"]
+    colorized = Image.new("RGB", image.size)
+    result_pil = Image.new("L", image.size)
+    for i, result in enumerate(results):
+        print(f"""{i} {result=}""")
+        if results[i]["label"] == "person":
+            result_pil = results[i]["mask"]
+#    result_pil = results[-1]["mask"]
     result_cv = pil2cv(result_pil)
     cv2.imshow("transformers", result_cv)
     key = cv2.waitKey(1)
