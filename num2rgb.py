@@ -2,6 +2,7 @@ import csv
 import json
 
 d = {}
+d2 = {}
 with open("T2i_Segmentation_Color_Ref_v21.csv") as f:
     reader = csv.reader(f)
     i = -1
@@ -11,8 +12,11 @@ with open("T2i_Segmentation_Color_Ref_v21.csv") as f:
             print(row)
             num, name, _, r, g, b, hex_str = row
             d[int(num)] = (int(r), int(g), int(b))
-
+            d2[name] = (int(r), int(g), int(b))
 print(d)
 
 with open('segmentation.json', 'w') as f:
     json.dump(d, f)
+
+with open('segmentation_name.json', 'w') as f:
+    json.dump(d2, f)

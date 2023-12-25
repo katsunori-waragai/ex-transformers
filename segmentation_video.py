@@ -8,6 +8,9 @@ import cv2
 
 from cute_cat import cv2pil, pil2cv
 
+from segmentation_color import SEGMENTATION_COLORS
+from segmentation_name import SEGMENTATION_NAME2COLORS
+
 def colorize_segmantation(results):
     pass
 
@@ -18,8 +21,15 @@ OUTDIR.mkdir(exist_ok=True)
 semantic_segmentation = pipeline("image-segmentation", "nvidia/segformer-b1-finetuned-cityscapes-1024-1024")
 
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 cv2.namedWindow("transformers", cv2.WINDOW_NORMAL)
 while True:
+    cap.grab()
+    cap.grab()
+    cap.grab()
+    cap.grab()
+    cap.grab()
+    cap.grab()
     ret, cvimg = cap.read()
     if cvimg is None:
         break
@@ -27,20 +37,26 @@ while True:
     image = cv2pil(cvimg)
     print(f"{image.size}=")
     results = semantic_segmentation(image)
-    colorized = Image.new("RGB", image.size)
+    colorized = image.copy()
     result_pil = Image.new("L", image.size)
     for i, result in enumerate(results):
         print(f"""{i} {result=}""")
-        if results[i]["label"] == "person":
+        if results[i]["label"] == "undefined":
+            continue
+        elif results[i]["label"] in SEGMENTATION_NAME2COLORS:
+            label = results[i]["label"]
             result_pil = results[i]["mask"]
-#    result_pil = results[-1]["mask"]
-    result_cv = pil2cv(result_pil)
+            mask = results[i]["mask"]
+
+            r, g, b = SEGMENTATION_NAME2COLORS[label]
+            monocolor = Image.new("RGB", image.size, (r, g, b))
+            colorized.paste(monocolor, (0, 0), mask)
+        else:
+            label = results[i]["label"]
+            print(f"warn: no such key {label}")
+    result_cv = pil2cv(colorized)
     cv2.imshow("transformers", result_cv)
     key = cv2.waitKey(1)
     if key & 0xff == ord('q'):
         break
 cv2.destroyAllWindows()
-
-
-oname = OUTDIR / "mask.png"
-results[-1]["mask"].save(str(oname))
