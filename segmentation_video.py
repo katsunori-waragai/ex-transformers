@@ -1,3 +1,7 @@
+"""
+HuggingFace を用いたsegmentation
+"""
+
 from pathlib import Path
 
 from transformers import pipeline
@@ -18,7 +22,9 @@ def colorize_segmantation(results):
 OUTDIR = Path(__name__).parent / "results"
 OUTDIR.mkdir(exist_ok=True)
 
-semantic_segmentation = pipeline("image-segmentation", "nvidia/segformer-b1-finetuned-cityscapes-1024-1024")
+# semantic_segmentation = pipeline("image-segmentation", "nvidia/segformer-b1-finetuned-cityscapes-1024-1024")  # cityscapesでの学習済みモデル
+
+semantic_segmentation = pipeline("image-segmentation", "facebook/maskformer-swin-tiny-coco")  # MS COCO での学習済みモデル
 
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)

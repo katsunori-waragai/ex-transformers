@@ -1,3 +1,9 @@
+"""
+MS COCO のカテゴリでのセグメンテーションの色の指定をjsonファイルに出力する。
+
+https://github.com/Mikubill/sd-webui-controlnet/discussions/503
+"""
+
 import csv
 import json
 
@@ -15,8 +21,8 @@ with open("T2i_Segmentation_Color_Ref_v21.csv") as f:
             d2[name] = (int(r), int(g), int(b))
 print(d)
 
-with open('segmentation.json', 'w') as f:
+with open('coco_color.json', 'w') as f:
     json.dump(d, f)
 
-with open('segmentation_name.json', 'w') as f:
+with open('coco_color_name.json', 'w') as f:
     json.dump(d2, f)
