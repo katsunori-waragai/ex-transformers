@@ -27,9 +27,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="image segmentation")
     parser.add_argument("src", help="video source")
     args = parser.parse_args()
-    # semantic_segmentation = pipeline("image-segmentation", "nvidia/segformer-b1-finetuned-cityscapes-1024-1024")  # cityscapesでの学習済みモデル
+    model = "nvidia/segformer-b1-finetuned-cityscapes-1024-1024"  # cityscapesでの学習済みモデル
+    model = "facebook/maskformer-swin-tiny-coco"  # MS COCO での学習済みモデル
 
-    semantic_segmentation = pipeline("image-segmentation", "facebook/maskformer-swin-tiny-coco")  # MS COCO での学習済みモデル
+    semantic_segmentation = pipeline("image-segmentation", model=model)
 
     print(args.src)
     if args.src.find("/dev/video") >= 0:
