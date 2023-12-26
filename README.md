@@ -21,5 +21,9 @@ cute_cat.py
 
 clip_example.py  
 
+segmentation_video.py
+画像セグメンテーション（動画入力)
+
+
 ## SEE ALSO
 https://pypi.org/project/transformers/
