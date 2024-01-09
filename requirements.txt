@@ -2,3 +2,5 @@ pillow
 timm
 torch
 transformers
+opencv-python
+scipy
