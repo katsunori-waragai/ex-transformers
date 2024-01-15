@@ -10,8 +10,7 @@ RUN apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 RUN python3 -m pip install -U pip
 RUN python3 -m pip install loguru tqdm thop ninja tabulate
 RUN python3 -m pip install pycocotools
-RUN python3 -m pip install pillow
 RUN python3 -m pip install timm
-RUN python3 -m pip install opencv-python scipy transformers
+RUN python3 -m pip install "opencv-python<4.3" pillow scipy transformers
 # RUN python3 -m pip install perceiver
 
