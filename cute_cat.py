@@ -147,7 +147,7 @@ def detect_url_image(url):
     image = Image.open(image_data)
 
     # Allocate a pipeline for object detection
-    object_detector = pipeline('object-detection')
+    object_detector = pipeline('object-detection', model="devonho/detr-resnet-50_finetuned_cppe5")
     result = object_detector(image)
     print(result)
     cvimg = pil2cv(image)
@@ -155,7 +155,7 @@ def detect_url_image(url):
     cv2.imwrite("junk.jpg", oimage)
 
 def detect_for_video():
-    object_detector = pipeline('object-detection')
+    object_detector = pipeline('object-detection', model="devonho/detr-resnet-50_finetuned_cppe5")
     cap = cv2.VideoCapture(0)
     cv2.namedWindow("transformers", cv2.WINDOW_NORMAL)
     while True:
