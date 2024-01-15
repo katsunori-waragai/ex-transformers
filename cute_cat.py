@@ -172,9 +172,9 @@ def detect_for_video():
             break
     cv2.destroyAllWindows()
 if __name__ == "__main__":
-    if 0:
+    if 1:
         # Download an image with cute cats
         url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png"
         detect_url_image(url)
-
-    detect_for_video()
+    else:
+        detect_for_video()
