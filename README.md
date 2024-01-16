@@ -25,5 +25,17 @@ segmentation_video.py
 画像セグメンテーション（動画入力)
 
 
+## Jetson AGX Orin
+```
+bash docker_build.sh
+bash docker_run.sh
+```
+
+
+## trouble shoothing
+- no detection results
+
+
 ## SEE ALSO
 https://pypi.org/project/transformers/
+
