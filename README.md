@@ -35,10 +35,13 @@ bash docker_run.sh
 
 
 ## troubleshooting
-- no detection results
+- no detection results in Jetson Docker environment
 
+```
 pip install -q datasets transformers evaluate timm albumentations
-
+```
+に指定されているライブラリを追加した。
+しかし、まだJetsonのDocker環境で検出結果がないままである。
 
 ## SEE ALSO
 https://pypi.org/project/transformers/
