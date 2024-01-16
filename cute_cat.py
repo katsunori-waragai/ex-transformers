@@ -1,3 +1,9 @@
+"""
+transformers を用いた物体検出
+
+https://huggingface.co/docs/transformers/tasks/object_detection
+
+"""
 import requests
 from PIL import Image
 from transformers import pipeline
@@ -154,6 +160,17 @@ def detect_url_image(url):
     oimage = draw_detection(cvimg, result)
     cv2.imwrite("junk.jpg", oimage)
 
+def detect_image(imgname):
+    image = Image.open(imgname)
+
+    # Allocate a pipeline for object detection
+    object_detector = pipeline('object-detection')
+    result = object_detector(image)
+    print(result)
+    cvimg = pil2cv(image)
+    oimage = draw_detection(cvimg, result)
+    cv2.imwrite("junk.jpg", oimage)
+
 def detect_for_video():
     object_detector = pipeline('object-detection')
     cap = cv2.VideoCapture(0)
@@ -172,9 +189,22 @@ def detect_for_video():
             break
     cv2.destroyAllWindows()
 if __name__ == "__main__":
-    if 0:
-        # Download an image with cute cats
-        url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png"
-        detect_url_image(url)
+    import argparse
+    url_default = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png"
+    parser = argparse.ArgumentParser()
+    group = parser.add_argument_group("src_type")
+    group.add_argument("--url", help="url")
+    group.add_argument("--image", help="image")
+    group.add_argument("--video", help="video")
 
-    detect_for_video()
+    args = parser.parse_args()
+    print(args)
+    if args.image:
+        # wget https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png
+        detect_image(args.image)
+    elif args.video:
+        detect_for_video()
+    elif args.url:
+        detect_url_image(args.url)
+    else:
+        parser.print_help()
