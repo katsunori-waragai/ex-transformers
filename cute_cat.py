@@ -147,7 +147,18 @@ def detect_url_image(url):
     image = Image.open(image_data)
 
     # Allocate a pipeline for object detection
-    object_detector = pipeline('object-detection', model="devonho/detr-resnet-50_finetuned_cppe5")
+    object_detector = pipeline('object-detection')
+    result = object_detector(image)
+    print(result)
+    cvimg = pil2cv(image)
+    oimage = draw_detection(cvimg, result)
+    cv2.imwrite("junk.jpg", oimage)
+
+def detect_image(imgname):
+    image = Image.open(imgname)
+
+    # Allocate a pipeline for object detection
+    object_detector = pipeline('object-detection')
     result = object_detector(image)
     print(result)
     cvimg = pil2cv(image)
@@ -155,7 +166,7 @@ def detect_url_image(url):
     cv2.imwrite("junk.jpg", oimage)
 
 def detect_for_video():
-    object_detector = pipeline('object-detection', model="devonho/detr-resnet-50_finetuned_cppe5")
+    object_detector = pipeline('object-detection')
     cap = cv2.VideoCapture(0)
     cv2.namedWindow("transformers", cv2.WINDOW_NORMAL)
     while True:
@@ -172,9 +183,20 @@ def detect_for_video():
             break
     cv2.destroyAllWindows()
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    group = parser.add_argument_group("src_type")
+    group.add_argument("-url", help="url")
+    group.add_argument("-image", help="image")
+    group.add_argument("-video", help="video")
+
+    args = parser.parse_args()
+    print(args)
     if 1:
         # Download an image with cute cats
-        url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png"
-        detect_url_image(url)
+        # url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png"
+        # detect_url_image(url)
+        imgname = "coco_sample.png"
+        detect_image(imgname)
     else:
         detect_for_video()
