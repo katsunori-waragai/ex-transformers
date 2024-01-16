@@ -184,6 +184,7 @@ def detect_for_video():
     cv2.destroyAllWindows()
 if __name__ == "__main__":
     import argparse
+    url_default = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png"
     parser = argparse.ArgumentParser()
     group = parser.add_argument_group("src_type")
     group.add_argument("--url", help="url")
@@ -193,8 +194,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
     if args.image:
+        # wget https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png
         detect_image(args.image)
-    elif args.url:
-        detect_url_image(args.url)
     elif args.video:
         detect_for_video()
+    elif args.url:
+        detect_url_image(args.url)
+    else:
+        parser.print_help()
