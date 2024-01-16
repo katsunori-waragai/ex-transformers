@@ -29,6 +29,7 @@ English text: Traceback (most recent call last):
     text = input("English text: ")
 EOFError
 ```
+Jetson Docker環境でも動作した。
 
 cute_cat.py  
 物体検出の例
@@ -64,6 +65,7 @@ bash docker_run.sh
 
 
 ## troubleshooting
+- 物体検出スクリプト　cute_cat.pyがJetsonのDocker環境で検出できていない。
 - no detection results in Jetson Docker environment
 
 ```
