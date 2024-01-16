@@ -64,7 +64,7 @@ bash docker_run.sh
 ```
 
 
-## troubleshooting
+## TODO
 - 物体検出スクリプト　cute_cat.pyがJetsonのDocker環境で検出できていない。
 - no detection results in Jetson Docker environment
 
