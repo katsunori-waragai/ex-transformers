@@ -11,6 +11,6 @@ RUN python3 -m pip install -U pip
 RUN python3 -m pip install loguru tqdm thop ninja tabulate
 RUN python3 -m pip install pycocotools
 RUN python3 -m pip install timm
-RUN python3 -m pip install "opencv-python<4.3" pillow scipy transformers
+RUN python3 -m pip install "opencv-python<4.3" pillow scipy transformers datasets evaluate timm albumentations
 # RUN python3 -m pip install perceiver
 
