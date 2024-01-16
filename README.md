@@ -26,14 +26,18 @@ segmentation_video.py
 
 
 ## Jetson AGX Orin
+Docker ファイルを作成して環境を構築中。
+
 ```
 bash docker_build.sh
 bash docker_run.sh
 ```
 
 
-## trouble shoothing
+## troubleshooting
 - no detection results
+
+pip install -q datasets transformers evaluate timm albumentations
 
 
 ## SEE ALSO

@@ -1,3 +1,9 @@
+"""
+transformers を用いた物体検出
+
+https://huggingface.co/docs/transformers/tasks/object_detection
+
+"""
 import requests
 from PIL import Image
 from transformers import pipeline
