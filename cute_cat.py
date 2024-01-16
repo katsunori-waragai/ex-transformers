@@ -186,17 +186,15 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     group = parser.add_argument_group("src_type")
-    group.add_argument("-url", help="url")
-    group.add_argument("-image", help="image")
-    group.add_argument("-video", help="video")
+    group.add_argument("--url", help="url")
+    group.add_argument("--image", help="image")
+    group.add_argument("--video", help="video")
 
     args = parser.parse_args()
     print(args)
-    if 1:
-        # Download an image with cute cats
-        # url = "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png"
-        # detect_url_image(url)
-        imgname = "coco_sample.png"
-        detect_image(imgname)
-    else:
+    if args.image:
+        detect_image(args.image)
+    elif args.url:
+        detect_url_image(args.url)
+    elif args.video:
         detect_for_video()
