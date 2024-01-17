@@ -148,26 +148,18 @@ def visualize_flow(flow):
   cv2.imwrite("opticalflow2.png", bgr)
   plt.imshow(bgr)
 
-urls = ["https://storage.googleapis.com/perceiver_io/sintel_frame1.png", "https://storage.googleapis.com/perceiver_io/sintel_frame2.png"]
+if __name__ == "__main__":
+    urls = ["https://storage.googleapis.com/perceiver_io/sintel_frame1.png", "https://storage.googleapis.com/perceiver_io/sintel_frame2.png"]
 
-image1 = Image.open(requests.get(urls[0], stream=True).raw)
-image2 = Image.open(requests.get(urls[1], stream=True).raw)
+    image1 = Image.open(requests.get(urls[0], stream=True).raw)
+    image2 = Image.open(requests.get(urls[1], stream=True).raw)
 
+    im1 = np.array(image1)
+    im2 = np.array(image2)
 
+    # Divide images into patches, compute flow between corresponding patches
+    # of both images, and stitch the flows together
+    grid_indices = compute_grid_indices(im1.shape)
+    flow = compute_optical_flow(model, normalize(im1), normalize(im2), grid_indices)
 
-
-
-im1 = np.array(image1)
-im2 = np.array(image2)
-
-
-
-
-# Divide images into patches, compute flow between corresponding patches
-# of both images, and stitch the flows together
-grid_indices = compute_grid_indices(im1.shape)
-flow = compute_optical_flow(model, normalize(im1), normalize(im2), grid_indices)
-
-
-
-visualize_flow(flow[0])
+    visualize_flow(flow[0])
