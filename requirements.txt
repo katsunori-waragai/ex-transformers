@@ -3,4 +3,5 @@ timm
 torch
 transformers
 opencv-python
+perceiver
 scipy
