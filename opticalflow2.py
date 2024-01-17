@@ -20,13 +20,10 @@ import itertools
 import cv2
 import matplotlib.pyplot as plt
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-urls = ["https://storage.googleapis.com/perceiver_io/sintel_frame1.png", "https://storage.googleapis.com/perceiver_io/sintel_frame2.png"]
-
-image1 = Image.open(requests.get(urls[0], stream=True).raw)
-image2 = Image.open(requests.get(urls[1], stream=True).raw)
-
-
+model = PerceiverForOpticalFlow.from_pretrained("deepmind/optical-flow-perceiver")
+model.to(device)
 
 def normalize(im):
     return im / 255.0 * 2 - 1
@@ -123,17 +120,8 @@ def compute_optical_flow(model, img1, img2, grid_indices, FLOW_SCALE_FACTOR=20):
     flows /= flow_count
     return flows
 
-
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-model = PerceiverForOpticalFlow.from_pretrained("deepmind/optical-flow-perceiver")
-model.to(device)
-
-im1 = np.array(image1)
-im2 = np.array(image2)
-
-
 TRAIN_SIZE = model.config.train_size
+
 
 def compute_grid_indices(image_shape, patch_size=TRAIN_SIZE, min_overlap=20):
   if min_overlap >= TRAIN_SIZE[0] or min_overlap >= TRAIN_SIZE[1]:
@@ -147,11 +135,6 @@ def compute_grid_indices(image_shape, patch_size=TRAIN_SIZE, min_overlap=20):
   xs[-1] = image_shape[1] - patch_size[1]
   return itertools.product(ys, xs)
 
-# Divide images into patches, compute flow between corresponding patches
-# of both images, and stitch the flows together
-grid_indices = compute_grid_indices(im1.shape)
-flow = compute_optical_flow(model, normalize(im1), normalize(im2), grid_indices)
-
 def visualize_flow(flow):
   flow = np.array(flow)
   # Use Hue, Saturation, Value colour model
@@ -164,6 +147,27 @@ def visualize_flow(flow):
   bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
   cv2.imwrite("opticalflow2.png", bgr)
   plt.imshow(bgr)
+
+urls = ["https://storage.googleapis.com/perceiver_io/sintel_frame1.png", "https://storage.googleapis.com/perceiver_io/sintel_frame2.png"]
+
+image1 = Image.open(requests.get(urls[0], stream=True).raw)
+image2 = Image.open(requests.get(urls[1], stream=True).raw)
+
+
+
+
+
+im1 = np.array(image1)
+im2 = np.array(image2)
+
+
+
+
+# Divide images into patches, compute flow between corresponding patches
+# of both images, and stitch the flows together
+grid_indices = compute_grid_indices(im1.shape)
+flow = compute_optical_flow(model, normalize(im1), normalize(im2), grid_indices)
+
 
 
 visualize_flow(flow[0])
