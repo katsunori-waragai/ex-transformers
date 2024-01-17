@@ -37,7 +37,7 @@ if __name__ == "__main__":
         flow = compute_optical_flow(model, normalize(im1), normalize(im2), grid_indices)
         t1 = cv2.getTickCount()
         used = (t1 - t0) / cv2.getTickFrequency()
-        print(f"{used=} {im1.shape=}")
+        print(f"{counter=} {used=} {im1.shape=}")
         bgr = visualize_flow(flow[0])
         writer.write(bgr)
         r1, im1 = cap.read()
