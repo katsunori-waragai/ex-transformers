@@ -12,11 +12,13 @@ if __name__ == "__main__":
     movie_name = "hand.mp4"
     movie_name = "nod.webm"
     cap = cv2.VideoCapture(movie_name)
+    counter = -1
     r1, im1 = cap.read()
     r2, im2 = cap.read()
     if not r2:
         exit()
 
+    counter += 1
     out_movie = "opticalflow_out.mp4"
 
     H, W = im1.shape[:2]
@@ -27,6 +29,9 @@ if __name__ == "__main__":
     while True:
         if not r2:
             break
+        if counter > 50:
+            break
+
         grid_indices = compute_grid_indices(im1.shape)
         t0 = cv2.getTickCount()
         flow = compute_optical_flow(model, normalize(im1), normalize(im2), grid_indices)
@@ -37,5 +42,6 @@ if __name__ == "__main__":
         writer.write(bgr)
         r1, im1 = cap.read()
         r2, im2 = cap.read()
+        counter += 1
 
     writer.release()
