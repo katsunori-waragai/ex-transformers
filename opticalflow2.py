@@ -155,8 +155,7 @@ def visualize_flow(flow):
     hsv[..., 0] = ang / np.pi / 2 * 180
     hsv[..., 1] = np.clip(mag * 255 / 24, 0, 255)
     bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-    cv2.imwrite("opticalflow2.png", bgr)
-    plt.imshow(bgr)
+    return bgr
 
 
 if __name__ == "__main__":
@@ -177,6 +176,10 @@ if __name__ == "__main__":
     # Divide images into patches, compute flow between corresponding patches
     # of both images, and stitch the flows together
     grid_indices = compute_grid_indices(im1.shape)
+    t0 = cv2.getTickCount()
     flow = compute_optical_flow(model, normalize(im1), normalize(im2), grid_indices)
-
-    visualize_flow(flow[0])
+    t1 = cv2.getTickCount()
+    used = (t1 - t0) / cv2.getTickFrequency()
+    print(f"{used=} {im1.shape=}")
+    bgr = visualize_flow(flow[0])
+    cv2.imwrite("opticalflow2.png", bgr)
