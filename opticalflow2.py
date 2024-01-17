@@ -171,6 +171,9 @@ if __name__ == "__main__":
     im1 = np.array(image1)
     im2 = np.array(image2)
 
+    cv2.imwrite("image1.png", im1)
+    cv2.imwrite("image2.png", im2)
+
     # Divide images into patches, compute flow between corresponding patches
     # of both images, and stitch the flows together
     grid_indices = compute_grid_indices(im1.shape)
