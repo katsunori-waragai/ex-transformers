@@ -7,13 +7,26 @@ worked without GPU.
 import requests
 from PIL import Image
 
+import math
+import torch.nn.functional as F
+
+import torch
+import numpy as np
+
+from transformers import PerceiverForOpticalFlow
+import torch
+
+import itertools
+
+import cv2
+import matplotlib.pyplot as plt
+
+
 urls = ["https://storage.googleapis.com/perceiver_io/sintel_frame1.png", "https://storage.googleapis.com/perceiver_io/sintel_frame2.png"]
 
 image1 = Image.open(requests.get(urls[0], stream=True).raw)
 image2 = Image.open(requests.get(urls[1], stream=True).raw)
 
-import math
-import torch.nn.functional as F
 
 
 def normalize(im):
@@ -36,9 +49,6 @@ def extract_image_patches(x, kernel, stride=1, dilation=1):
 
     return patches.view(b, -1, patches.shape[-2], patches.shape[-1])
 
-
-import torch
-import numpy as np
 
 
 def compute_optical_flow(model, img1, img2, grid_indices, FLOW_SCALE_FACTOR=20):
@@ -114,8 +124,6 @@ def compute_optical_flow(model, img1, img2, grid_indices, FLOW_SCALE_FACTOR=20):
     flows /= flow_count
     return flows
 
-from transformers import PerceiverForOpticalFlow
-import torch
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -125,7 +133,6 @@ model.to(device)
 im1 = np.array(image1)
 im2 = np.array(image2)
 
-import itertools
 
 TRAIN_SIZE = model.config.train_size
 
@@ -145,9 +152,6 @@ def compute_grid_indices(image_shape, patch_size=TRAIN_SIZE, min_overlap=20):
 # of both images, and stitch the flows together
 grid_indices = compute_grid_indices(im1.shape)
 flow = compute_optical_flow(model, normalize(im1), normalize(im2), grid_indices)
-
-import cv2
-import matplotlib.pyplot as plt
 
 def visualize_flow(flow):
   flow = np.array(flow)
