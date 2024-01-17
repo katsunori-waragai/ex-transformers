@@ -20,10 +20,11 @@ import itertools
 import cv2
 import matplotlib.pyplot as plt
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = PerceiverForOpticalFlow.from_pretrained("deepmind/optical-flow-perceiver")
 model.to(device)
+
 
 def normalize(im):
     return im / 255.0 * 2 - 1
@@ -37,14 +38,15 @@ def extract_image_patches(x, kernel, stride=1, dilation=1):
     w2 = math.ceil(w / stride)
     pad_row = (h2 - 1) * stride + (kernel - 1) * dilation + 1 - h
     pad_col = (w2 - 1) * stride + (kernel - 1) * dilation + 1 - w
-    x = F.pad(x, (pad_row // 2, pad_row - pad_row // 2, pad_col // 2, pad_col - pad_col // 2))
+    x = F.pad(
+        x, (pad_row // 2, pad_row - pad_row // 2, pad_col // 2, pad_col - pad_col // 2)
+    )
 
     # Extract patches
     patches = x.unfold(2, kernel, stride).unfold(3, kernel, stride)
     patches = patches.permute(0, 4, 5, 1, 2, 3).contiguous()
 
     return patches.view(b, -1, patches.shape[-2], patches.shape[-1])
-
 
 
 def compute_optical_flow(model, img1, img2, grid_indices, FLOW_SCALE_FACTOR=20):
@@ -85,13 +87,14 @@ def compute_optical_flow(model, img1, img2, grid_indices, FLOW_SCALE_FACTOR=20):
 
     for y, x in grid_indices:
         imgs = torch.stack([img1, img2], dim=0)[None]
-        inp_piece = imgs[..., y: y + patch_size[0],
-                    x: x + patch_size[1]]
+        inp_piece = imgs[..., y : y + patch_size[0], x : x + patch_size[1]]
 
         print("Shape of inp_piece:", inp_piece.shape)
 
         batch_size, _, C, H, W = inp_piece.shape
-        patches = extract_image_patches(inp_piece.view(batch_size * 2, C, H, W), kernel=3)
+        patches = extract_image_patches(
+            inp_piece.view(batch_size * 2, C, H, W), kernel=3
+        )
         _, C, H, W = patches.shape
         patches = patches.view(batch_size, -1, C, H, W).float().to(model.device)
 
@@ -103,14 +106,18 @@ def compute_optical_flow(model, img1, img2, grid_indices, FLOW_SCALE_FACTOR=20):
         flow_piece = output.cpu().detach().numpy()
 
         weights_x, weights_y = np.meshgrid(
-            torch.arange(patch_size[1]), torch.arange(patch_size[0]))
+            torch.arange(patch_size[1]), torch.arange(patch_size[0])
+        )
 
         weights_x = np.minimum(weights_x + 1, patch_size[1] - weights_x)
         weights_y = np.minimum(weights_y + 1, patch_size[0] - weights_y)
-        weights = np.minimum(weights_x, weights_y)[np.newaxis, :, :,
-                  np.newaxis]
-        padding = [(0, 0), (y, height - y - patch_size[0]),
-                   (x, width - x - patch_size[1]), (0, 0)]
+        weights = np.minimum(weights_x, weights_y)[np.newaxis, :, :, np.newaxis]
+        padding = [
+            (0, 0),
+            (y, height - y - patch_size[0]),
+            (x, width - x - patch_size[1]),
+            (0, 0),
+        ]
         flows += np.pad(flow_piece * weights, padding)
         flow_count += np.pad(weights, padding)
 
@@ -120,36 +127,43 @@ def compute_optical_flow(model, img1, img2, grid_indices, FLOW_SCALE_FACTOR=20):
     flows /= flow_count
     return flows
 
+
 TRAIN_SIZE = model.config.train_size
 
 
 def compute_grid_indices(image_shape, patch_size=TRAIN_SIZE, min_overlap=20):
-  if min_overlap >= TRAIN_SIZE[0] or min_overlap >= TRAIN_SIZE[1]:
-    raise ValueError(
-        f"Overlap should be less than size of patch (got {min_overlap}"
-        f"for patch size {patch_size}).")
-  ys = list(range(0, image_shape[0], TRAIN_SIZE[0] - min_overlap))
-  xs = list(range(0, image_shape[1], TRAIN_SIZE[1] - min_overlap))
-  # Make sure the final patch is flush with the image boundary
-  ys[-1] = image_shape[0] - patch_size[0]
-  xs[-1] = image_shape[1] - patch_size[1]
-  return itertools.product(ys, xs)
+    if min_overlap >= TRAIN_SIZE[0] or min_overlap >= TRAIN_SIZE[1]:
+        raise ValueError(
+            f"Overlap should be less than size of patch (got {min_overlap}"
+            f"for patch size {patch_size})."
+        )
+    ys = list(range(0, image_shape[0], TRAIN_SIZE[0] - min_overlap))
+    xs = list(range(0, image_shape[1], TRAIN_SIZE[1] - min_overlap))
+    # Make sure the final patch is flush with the image boundary
+    ys[-1] = image_shape[0] - patch_size[0]
+    xs[-1] = image_shape[1] - patch_size[1]
+    return itertools.product(ys, xs)
+
 
 def visualize_flow(flow):
-  flow = np.array(flow)
-  # Use Hue, Saturation, Value colour model
-  hsv = np.zeros((flow.shape[0], flow.shape[1], 3), dtype=np.uint8)
-  hsv[..., 2] = 255
+    flow = np.array(flow)
+    # Use Hue, Saturation, Value colour model
+    hsv = np.zeros((flow.shape[0], flow.shape[1], 3), dtype=np.uint8)
+    hsv[..., 2] = 255
 
-  mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
-  hsv[..., 0] = ang / np.pi / 2 * 180
-  hsv[..., 1] = np.clip(mag * 255 / 24, 0, 255)
-  bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-  cv2.imwrite("opticalflow2.png", bgr)
-  plt.imshow(bgr)
+    mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+    hsv[..., 0] = ang / np.pi / 2 * 180
+    hsv[..., 1] = np.clip(mag * 255 / 24, 0, 255)
+    bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+    cv2.imwrite("opticalflow2.png", bgr)
+    plt.imshow(bgr)
+
 
 if __name__ == "__main__":
-    urls = ["https://storage.googleapis.com/perceiver_io/sintel_frame1.png", "https://storage.googleapis.com/perceiver_io/sintel_frame2.png"]
+    urls = [
+        "https://storage.googleapis.com/perceiver_io/sintel_frame1.png",
+        "https://storage.googleapis.com/perceiver_io/sintel_frame2.png",
+    ]
 
     image1 = Image.open(requests.get(urls[0], stream=True).raw)
     image2 = Image.open(requests.get(urls[1], stream=True).raw)
