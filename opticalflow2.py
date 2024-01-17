@@ -1,24 +1,20 @@
 """
 converted from
 Perceiver_for_Optical_Flow.ipynb
+https://github.com/NielsRogge/Transformers-Tutorials/blob/master/Perceiver/Perceiver_for_Optical_Flow.ipynb
 
 worked without GPU.
 """
+import itertools
+import math
+
 import requests
 from PIL import Image
-
-import math
-import torch.nn.functional as F
-
-import torch
 import numpy as np
-
-from transformers import PerceiverForOpticalFlow
-
-import itertools
-
 import cv2
-import matplotlib.pyplot as plt
+import torch.nn.functional as F
+import torch
+from transformers import PerceiverForOpticalFlow
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
