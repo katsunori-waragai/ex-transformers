@@ -103,6 +103,8 @@ _COLORS_UINT8 = (255 * _COLORS).astype(np.uint8)
 
 LABEL2NUM = get_label2num_dict()
 
+MODEL = "devonho/detr-resnet-50_finetuned_cppe5"
+
 def draw_detection(image, result):
     for i, d in enumerate(result):
         xmin = d["box"]["xmin"]
@@ -153,7 +155,7 @@ def detect_url_image(url):
     image = Image.open(image_data)
 
     # Allocate a pipeline for object detection
-    object_detector = pipeline('object-detection')
+    object_detector = pipeline('object-detection', model=MODEL)
     result = object_detector(image)
     print(result)
     cvimg = pil2cv(image)
@@ -164,7 +166,7 @@ def detect_image(imgname):
     image = Image.open(imgname)
 
     # Allocate a pipeline for object detection
-    object_detector = pipeline('object-detection')
+    object_detector = pipeline('object-detection', model=MODEL)
     result = object_detector(image)
     print(result)
     cvimg = pil2cv(image)
@@ -172,16 +174,20 @@ def detect_image(imgname):
     cv2.imwrite("junk.jpg", oimage)
 
 def detect_for_video():
-    object_detector = pipeline('object-detection')
+    object_detector = pipeline('object-detection', model=MODEL)
     cap = cv2.VideoCapture(0)
     cv2.namedWindow("transformers", cv2.WINDOW_NORMAL)
     while True:
         ret, cvimg = cap.read()
         if cvimg is None:
             break
-
+        print(f"{cvimg.shape=}")
+        if cvimg.shape[0] > 640:
+            H, W = cvimg.shape[:2]
+            cvimg = cv2.resize(cvimg, (W // 2 , H // 2))
         image = cv2pil(cvimg)
         result = object_detector(image)
+        print(f"{len(result)=}")
         oimage = draw_detection(cvimg, result)
         cv2.imshow("transformers", oimage)
         key = cv2.waitKey(1)
