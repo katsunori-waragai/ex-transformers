@@ -31,11 +31,11 @@ EOFError
 ```
 Jetson Docker環境でも動作した。
 
-cute_cat.py  
+obj_detection.py  
 物体検出の例
 
 ```commandline
-$ python cute_cat.py --image coco_sample.png 
+$ python obj_detection.py --image coco_sample.png 
 Namespace(image='coco_sample.png', url=None, video=None)
 No model was supplied, defaulted to facebook/detr-resnet-50 and revision 2729413 (https://huggingface.co/facebook/detr-resnet-50).
 Using a pipeline without specifying a model name and revision in production is not recommended.
@@ -65,7 +65,7 @@ bash docker_run.sh
 
 
 ## TODO
-- 物体検出スクリプト　cute_cat.pyがJetsonのDocker環境で検出できていない。
+- 物体検出スクリプト　obj_detection.pyがJetsonのDocker環境で検出できていない。
 - no detection results in Jetson Docker environment
 
 ```
