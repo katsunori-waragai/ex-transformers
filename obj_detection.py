@@ -179,9 +179,13 @@ def detect_for_video():
         ret, cvimg = cap.read()
         if cvimg is None:
             break
-
+        print(f"{cvimg.shape=}")
+        if cvimg.shape[0] > 640:
+            H, W = cvimg.shape[:2]
+            cvimg = cv2.resize(cvimg, (W // 2 , H // 2))
         image = cv2pil(cvimg)
         result = object_detector(image)
+        print(f"{len(result)=}")
         oimage = draw_detection(cvimg, result)
         cv2.imshow("transformers", oimage)
         key = cv2.waitKey(1)
